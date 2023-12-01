@@ -1,0 +1,9 @@
+---
+- name: Run echo "hello world" playbook
+  hosts: 127.0.0.1  # Replace with your target host or group of hosts
+  # gather_facts: false      # We don't need to gather facts in this example
+
+  tasks:
+    - name: Run echo command
+      debug:
+        msg: "Hello, world!"
