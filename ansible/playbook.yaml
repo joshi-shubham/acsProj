@@ -5,5 +5,5 @@
 
   tasks:
     - name: Run echo command
-      debug:
+      ansible.builtin.debug:
         msg: "Hello, world!"
