@@ -25,4 +25,10 @@ resource "aws_instance" "web" {
   tags = {
     Name = "HelloWorld"
   }
+  metadata_options {
+     http_tokens = "required"
+    }  
+  root_block_device {
+      encrypted = true
+  }
 }
