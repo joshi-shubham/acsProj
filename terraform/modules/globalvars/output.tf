@@ -17,8 +17,8 @@ output "instance_type" {
 }
 
 output "s3_dev_backend_bucket" {
-  value = "sjoshi73-project-backend"
+  value = "revati333-project-backend"
 }
 output "s3_prod_backend_bucket" {
-  value = "acs730-assignment-sjoshi73"
+  value = "acs730-assignment-revati333"
 }
