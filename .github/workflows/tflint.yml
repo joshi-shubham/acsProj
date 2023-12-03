@@ -1,0 +1,20 @@
+name: Lint project with terraform lint
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "prod"
+      - "staging"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
