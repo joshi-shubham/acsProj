@@ -1,7 +1,7 @@
 # Default tags
 variable "default_tags" {
   default = {
-    "assignment"="FINAL"
+    "assignment" = "FINAL"
   }
   type        = map(any)
   description = "Default tags to be appliad to all AWS resources"
@@ -16,14 +16,14 @@ variable "prefix" {
 
 # Provision public subnets in custom VPC
 variable "public_subnet_cidrs" {
-  default     = ["10.200.0.0/24","10.200.1.0/24","10.200.2.0/24"]
+  default     = ["10.200.0.0/24", "10.200.1.0/24", "10.200.2.0/24"]
   type        = list(string)
   description = "Public Subnet CIDRs"
 }
 
 # Provision private subnets in custom VPC
 variable "private_subnet_cidrs" {
-  default     = ["10.200.3.0/24","10.200.4.0/24","10.200.5.0/24"]
+  default     = ["10.200.3.0/24", "10.200.4.0/24", "10.200.5.0/24"]
   type        = list(string)
   description = "Private Subnet CIDR"
 }
@@ -62,7 +62,7 @@ variable "ami" {
 
 variable "service_ports" {
   type        = list(string)
-  default     = ["80", "22","443"]
+  default     = ["80", "22", "443"]
   description = "Ports that should be open on a webserver"
 }
 

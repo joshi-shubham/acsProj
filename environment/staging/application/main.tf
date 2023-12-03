@@ -119,7 +119,7 @@ resource "aws_nat_gateway" "nat-gw" {
 
 # Create elastic IP for NAT GW
 resource "aws_eip" "nat-eip" {
-  domain = vpc
+  domain = "vpc"
   tags = {
     Name = "${var.prefix}-natgw"
   }
@@ -144,7 +144,7 @@ resource "aws_route" "private_route" {
 
 # Associate subnets with the custom route table
 resource "aws_route_table_association" "private_route_table_association" {
-  count          = length(aws_subnet.private_subnet[*].id)  
+  count          = length(aws_subnet.private_subnet[*].id)
   route_table_id = aws_route_table.private_route_table.id
   subnet_id      = aws_subnet.private_subnet[count.index].id
 }
@@ -163,7 +163,7 @@ module "globalvars" {
 resource "aws_security_group" "alb_security_group" {
   name        = "alb-security-group"
   description = "ALB Security Group"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
   //vpc_id      = aws_vpc.vpc.id
 
   ingress {
@@ -186,26 +186,26 @@ resource "aws_security_group" "alb_security_group" {
 resource "aws_security_group" "asg_security_group" {
   name        = "asg-security-group"
   description = "ASG Security Group"
-  vpc_id = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
   //vpc_id      = aws_vpc.vpc.id
 
   dynamic "ingress" {
     for_each = var.service_ports
     content {
-      from_port       = ingress.value
-      to_port         = ingress.value
+      from_port = ingress.value
+      to_port   = ingress.value
       //cidr_blocks = ["0.0.0.0/0"]
       protocol        = "tcp"
       security_groups = [aws_security_group.alb_security_group.id]
     }
   }
-#   ingress {
-#     description     = "HTTP from ALB"
-#     from_port       = 80
-#     to_port         = 80
-#     protocol        = "tcp"
-#     security_groups = [aws_security_group.alb_security_group.id]
-#   }
+  #   ingress {
+  #     description     = "HTTP from ALB"
+  #     from_port       = 80
+  #     to_port         = 80
+  #     protocol        = "tcp"
+  #     security_groups = [aws_security_group.alb_security_group.id]
+  #   }
 
   egress {
     from_port   = 0
@@ -219,7 +219,7 @@ resource "aws_launch_template" "launch_template" {
   name          = "aws-launch-template"
   image_id      = var.ami
   instance_type = lookup(var.instance_type, var.env)
-
+  
   network_interfaces {
     device_index    = 0
     security_groups = [aws_security_group.asg_security_group.id]
@@ -237,8 +237,8 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   min_size            = 3
   vpc_zone_identifier = [for i in aws_subnet.private_subnet[*] : i.id]
   //vpc_zone_identifier = [for i in aws_subnet.private_subnet[*] : i.id]
-  target_group_arns   = [aws_lb_target_group.lb_target_group.arn]
-  name = "ec2-asg"
+  target_group_arns = [aws_lb_target_group.lb_target_group.arn]
+  name              = "ec2-asg"
 
   launch_template {
     id      = aws_launch_template.launch_template.id
@@ -258,7 +258,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   name     = "lb-target-group"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
+  vpc_id   = aws_vpc.main.id
 }
 
 resource "aws_lb_listener" "alb_listener" {
@@ -306,8 +306,10 @@ resource "aws_lb_listener" "alb_listener" {
 
 # Adding SSH key to Amazon EC2
 resource "aws_key_pair" "web_key" {
-  key_name   = local.name_prefix
-  public_key = file("${local.name_prefix}.pub")
+  //key_name   = local.name_prefix
+  key_name = "final-project-staging"
+  //public_key = file("${local.name_prefix}.pub")
+  public_key = file("final-project-staging.pub")
 }
 
 
@@ -315,13 +317,13 @@ resource "aws_key_pair" "web_key" {
 resource "aws_security_group" "web_sg" {
   name        = "allow_http_ssh"
   description = "Allow SSH inbound traffic"
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+  vpc_id      = aws_vpc.main.id
 
   dynamic "ingress" {
     for_each = var.service_ports
     content {
-      from_port       = ingress.value
-      to_port         = ingress.value
+      from_port = ingress.value
+      to_port   = ingress.value
       //cidr_blocks = ["0.0.0.0/0"]
       security_groups = [aws_security_group.bastion_sg.id]
       protocol        = "tcp"
@@ -350,7 +352,8 @@ resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.latest_amazon_linux.id
   instance_type               = lookup(var.instance_type, var.env)
   key_name                    = aws_key_pair.web_key.key_name
-  subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids[0]
+  subnet_id = aws_subnet.public_subnet[0].id
+  //subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids[0]
   security_groups             = [aws_security_group.bastion_sg.id]
   associate_public_ip_address = true
 
@@ -370,25 +373,25 @@ resource "aws_instance" "bastion" {
 resource "aws_security_group" "bastion_sg" {
   name        = "allow_ssh, HTTP/S"
   description = "Allow SSH, HTTP/S inbound traffic"
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+  vpc_id      = aws_vpc.main.id
 
   dynamic "ingress" {
     for_each = var.service_ports
     content {
-      from_port       = ingress.value
-      to_port         = ingress.value
+      from_port   = ingress.value
+      to_port     = ingress.value
       cidr_blocks = ["0.0.0.0/0"]
-      protocol        = "tcp"
+      protocol    = "tcp"
     }
   }
 
-#   ingress {
-#     description = "SSH from everywhere"
-#     from_port   = 22
-#     to_port     = 22
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  #   ingress {
+  #     description = "SSH from everywhere"
+  #     from_port   = 22
+  #     to_port     = 22
+  #     protocol    = "tcp"
+  #     cidr_blocks = ["0.0.0.0/0"]
+  #   }
 
   egress {
     from_port        = 0
