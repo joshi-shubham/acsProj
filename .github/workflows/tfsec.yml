@@ -13,4 +13,3 @@ jobs:
         with:
           working_directory: ./terraform
           additional_args: --force-all-dirs
-
