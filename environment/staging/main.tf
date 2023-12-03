@@ -1,6 +1,7 @@
 # Retrieve global variables from the Terraform module
 module "globalvars"{
   source = "../../../modules/globalvars"
+  
 }
 
 # Define tags locally
@@ -22,3 +23,9 @@ module "vpc-staging" {
   default_tags       = local.default_tags
 }
 
+module "app-staging" {
+  source = "../../../../modules/aws_webservers"
+  env = var.env
+  ami = var.env
+  service_ports = var.service_ports
+}

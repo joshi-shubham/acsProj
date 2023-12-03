@@ -3,8 +3,6 @@ output "default_tags" {
     "assignment" ="FINAL"
   }
 }
-
-
 output "prefix" {
   value     = "final-project"
 }

@@ -165,34 +165,34 @@ resource "aws_lb_listener" "alb_listener" {
 }
 
 # Webserver deployment
-resource "aws_instance" "my_amazon" {
-  ami                         = data.aws_ami.latest_amazon_linux.id
-  instance_type               = lookup(var.instance_type, var.env)
-  key_name                    = aws_key_pair.web_key.key_name
-  subnet_id                   = data.terraform_remote_state.network.outputs.private_subnet_ids
-  security_groups             = [aws_security_group.web_sg.id]
-  associate_public_ip_address = false
-  user_data = templatefile("${path.module}/install_httpd.sh.tpl",
-    {
-      env    = upper(var.env),
-      prefix = upper(local.prefix)
-    }
-  )
+# resource "aws_instance" "my_amazon" {
+#   ami                         = data.aws_ami.latest_amazon_linux.id
+#   instance_type               = lookup(var.instance_type, var.env)
+#   key_name                    = aws_key_pair.web_key.key_name
+#   subnet_id                   = data.terraform_remote_state.network.outputs.private_subnet_ids
+#   security_groups             = [aws_security_group.web_sg.id]
+#   associate_public_ip_address = false
+#   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
+#     {
+#       env    = upper(var.env),
+#       prefix = upper(local.prefix)
+#     }
+#   )
 
-  root_block_device {
-    encrypted = var.env == "prod" ? true : false
-  }
+#   root_block_device {
+#     encrypted = var.env == "prod" ? true : false
+#   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
+#   lifecycle {
+#     create_before_destroy = true
+#   }
 
-  tags = merge(local.default_tags,
-    {
-      "Name" = "${local.name_prefix}-Amazon-Linux"
-    }
-  )
-}
+#   tags = merge(local.default_tags,
+#     {
+#       "Name" = "${local.name_prefix}-Amazon-Linux"
+#     }
+#   )
+# }
 
 
 
