@@ -41,7 +41,7 @@ variable "ami" {
 
 variable "service_ports" {
   type        = list(string)
-  default     = ["80", "22", "443"]
+  default     = ["80", "443"]
   description = "Ports that should be open on a webserver"
 }
 
