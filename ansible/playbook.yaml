@@ -1,9 +1,54 @@
----
-- name: Run echo "hello world" playbook
-  hosts: 127.0.0.1  # Replace with your target host or group of hosts
-  # gather_facts: false      # We don't need to gather facts in this example
+- name: Upload images to S3 bucket
+  hosts: localhost
+
+  vars:
+    s3_bucket_name: "webimages-bucket"
+    s3_destination_folder: "images"
+    local_image_directory: "images"
+    image: "Actual Enthusiasm.png"
 
   tasks:
-    - name: Run echo command
-      ansible.builtin.debug:
-        msg: "Hello, world!"
+
+    - name: Upload image files to S3 bucket
+      aws_s3:
+        bucket: "{{ s3_bucket_name }}"
+        mode: put
+        object: "{{ s3_destination_folder }}/{{ image }}"
+        src: "{{ local_image_directory }}/{{ image }}"
+      with_fileglob:
+        - "{{ local_image_directory }}/{{ image }}"
+
+    
+- name: Install httpd on webserver group
+  hosts: tag_webserver
+  gather_facts: true
+  vars_files: webserver.yaml
+  
+  
+  vars:
+    web_root: "/var/www/html"
+    webpage_file: "index.html"
+    s3_bucket_name: "webimages-bucket"
+    s3_image_key: "images/Actual Enthusiasm.png"
+  
+  tasks:
+    - name: Update package cache and install httpd
+      become: true
+      package:
+        name: httpd
+
+    - name: Start httpd service and enable it on boot
+      become: true
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Create webpage fetching image from S3
+      become: true
+      template:
+        src: webpage.j2
+        dest: "{{ web_root }}/{{ webpage_file }}"
+      vars:
+        s3_bucket: "{{ s3_bucket_name }}"
+        s3_image: "{{ s3_image_key }}"
