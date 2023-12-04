@@ -1,6 +1,6 @@
 output "default_tags" {
   value = {
-    "Owner" = "AActual Enthusiasm"
+    "Owner" = "Actual Enthusiasm"
     "App" = "Web"
   }
 }
