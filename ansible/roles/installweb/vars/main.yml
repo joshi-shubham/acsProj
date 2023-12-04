@@ -1,0 +1,6 @@
+---
+# vars file for installweb
+web_root: "/var/www/html"
+webpage_file: "index.html"
+s3_bucket_name: "webimages-bucket"
+s3_image_key: "images/Actual Enthusiasm.png"

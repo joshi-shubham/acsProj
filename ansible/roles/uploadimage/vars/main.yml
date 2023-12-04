@@ -1,0 +1,6 @@
+---
+# vars file for uploadimage
+s3_bucket_name: "webimages-bucket"
+s3_destination_folder: "images" 
+local_image_directory: "files"
+image: "Actual Enthusiasm.png"
