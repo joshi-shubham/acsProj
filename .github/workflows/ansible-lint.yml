@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install Ansible Galaxy roles
+        run: ansible-galaxy install aws_s3
       - uses: actions/checkout@v4
 
       - name: Set up Python
