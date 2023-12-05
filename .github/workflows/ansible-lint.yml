@@ -8,7 +8,7 @@ jobs:
 
     steps:
       - name: Install Ansible Galaxy roles
-        run: ansible-galaxy install aws_s3
+        run: ansible-galaxy collection install amazon.aws
       - uses: actions/checkout@v4
 
       - name: Set up Python
