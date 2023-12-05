@@ -35,21 +35,19 @@ resource "aws_security_group" "alb_security_group" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
   //vpc_id      = aws_vpc.vpc.id
 
-  ingress {
-    description = "HTTP from Internet"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "HTTPS from Internet"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.service_ports
+
+    content {
+      description = "INBOUND FROM HTTP/S"
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
   egress {
+    description = "OUTBOUND traffic to all"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -70,26 +68,42 @@ resource "aws_security_group" "asg_security_group" {
 
   dynamic "ingress" {
     for_each = var.service_ports
+
     content {
-      from_port = ingress.value
-      to_port   = ingress.value
+      description = "inbound from ALB for HTTP/S"
+      from_port   = ingress.value
+      to_port     = ingress.value
       //cidr_blocks = ["0.0.0.0/0"]
       protocol        = "tcp"
       security_groups = [aws_security_group.alb_security_group.id]
     }
   }
-      ingress {
-      description = "SSH from bastion"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      security_groups = [aws_security_group.bastion_sg.id]
+  dynamic "egress" {
+    for_each = var.service_ports
+
+    content {
+      description = "outbound for HTTP/S"
+      from_port   = egress.value
+      to_port     = egress.value
+      cidr_blocks = ["0.0.0.0/0"]
+      protocol        = "tcp"
+      //security_groups = [aws_security_group.alb_security_group.id]
     }
+  }
+  ingress {
+    description     = "SSH from bastion"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id]
+  }
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "outbound to bastion for SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    //cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.bastion_sg.id]
   }
   tags = merge(local.default_tags,
     {
@@ -103,6 +117,9 @@ resource "aws_launch_template" "launch_template" {
   image_id      = var.ami
   instance_type = lookup(var.instance_type, var.env)
   key_name      = "final-project-staging" //added key for ec2
+  metadata_options {
+    http_tokens = "required"
+  }
   tag_specifications {
     resource_type = "instance"
     tags = merge(local.default_tags,
@@ -186,7 +203,7 @@ resource "aws_lb_listener" "alb_listener" {
     #   port        = "80"
     #   protocol    = "HTTP"
     #   //status_code = "HTTP_301"
-      
+
     # }
     //target_group_arn = aws_lb_target_group.lb_target_group.arn
   }
@@ -216,7 +233,12 @@ resource "aws_instance" "bastion" {
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_id[0]
   security_groups             = [aws_security_group.bastion_sg.id]
   associate_public_ip_address = true
-
+  root_block_device {
+    encrypted = true
+  }
+  metadata_options {
+    http_tokens = "required"
+  }
   tags = merge(local.default_tags,
     {
       "Name" = "${local.name_prefix}-bastion"
@@ -230,9 +252,11 @@ resource "aws_security_group" "bastion_sg" {
   description = "Allow SSH, HTTP/S inbound traffic"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
+
   dynamic "ingress" {
     for_each = var.service_ports
     content {
+      description = "inbound from ports HTTP/S"
       from_port   = ingress.value
       to_port     = ingress.value
       cidr_blocks = ["0.0.0.0/0"]
@@ -240,15 +264,16 @@ resource "aws_security_group" "bastion_sg" {
     }
   }
 
-    ingress {
-      description = "SSH from everywhere"
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
+  ingress {
+    description = "SSH from everywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   egress {
+    description      = "outbound to all"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
