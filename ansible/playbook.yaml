@@ -10,7 +10,8 @@
 - name: Install httpd on webserver group
   hosts: tag_webserver
   gather_facts: true
-
+  vars_files:
+    - ./group_vars/tag_webserver
   tasks:
     - name: install httpd and create webpage role
       include_role:
