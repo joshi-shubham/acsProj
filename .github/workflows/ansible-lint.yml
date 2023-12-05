@@ -1,10 +1,25 @@
 name: ansible-lint
 on: [push, pull_request]
+
 jobs:
   build:
     name: Ansible Lint
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Install Ansible Galaxy roles
+        run: ansible-galaxy collection install amazon.aws
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto
+
       - name: Run ansible-lint
         uses: ansible/ansible-lint@main

@@ -17,7 +17,7 @@ locals {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "aafinal-project-backend"
+    bucket = "sjoshi73-project-backend"
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"
   }
@@ -116,7 +116,7 @@ resource "aws_launch_template" "launch_template" {
   name          = "aws-launch-template"
   image_id      = var.ami
   instance_type = lookup(var.instance_type, var.env)
-  key_name      = "final-project-staging" //added key for ec2
+  key_name      = aws_key_pair.web_key.key_name
   metadata_options {
     http_tokens = "required"
   }
@@ -125,6 +125,7 @@ resource "aws_launch_template" "launch_template" {
     tags = merge(local.default_tags,
       {
         "Name" = "${local.name_prefix}-Webserver"
+        "role" = "webserver"
       }
     )
   }
@@ -178,7 +179,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   protocol = "HTTP"
   vpc_id   = data.terraform_remote_state.network.outputs.vpc_id
   health_check {
-    path     = "/h"
+    path     = "/"
     matcher  = 200
     interval = 5
     timeout  = 2
@@ -220,7 +221,7 @@ resource "aws_key_pair" "web_key" {
   //key_name   = local.name_prefix
   key_name = "final-project-staging"
   //public_key = file("${local.name_prefix}.pub")
-  public_key = file("final-project-staging.pub")
+  public_key = file("project-key.pub")
 }
 
 
@@ -242,6 +243,7 @@ resource "aws_instance" "bastion" {
   tags = merge(local.default_tags,
     {
       "Name" = "${local.name_prefix}-bastion"
+      "role" = "bastion"
     }
   )
 }
