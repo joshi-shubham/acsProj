@@ -1,0 +1,10 @@
+---
+# tasks file for uploadimage
+- name: Upload image files to S3 bucket
+  aws_s3:
+    bucket: "{{ s3_bucket_name }}"
+    mode: put
+    object: "{{ image }}"
+    src: "{{ local_image_directory }}/{{ image }}"
+  with_fileglob:
+        - "{{ local_image_directory }}/{{ image }}"

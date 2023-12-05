@@ -1,9 +1,17 @@
----
-- name: Run echo "hello world" playbook
-  hosts: 127.0.0.1  # Replace with your target host or group of hosts
-  # gather_facts: false      # We don't need to gather facts in this example
+- name: Upload images to S3 bucket
+  hosts: localhost
+  
+  tasks:
+    - name: upload image to S3 role
+      include_role:
+        name: uploadimage
+
+   
+- name: Install httpd on webserver group
+  hosts: tag_webserver
+  gather_facts: true
 
   tasks:
-    - name: Run echo command
-      ansible.builtin.debug:
-        msg: "Hello, world!"
+    - name: install httpd and create webpage role
+      include_role:
+        name: installweb

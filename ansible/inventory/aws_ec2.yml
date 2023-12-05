@@ -1,0 +1,15 @@
+# Ansible AWS EC2 dynamic inventory plugin
+plugin: aws_ec2
+regions:
+  - us-east-1
+hostnames:
+  - ip-address
+  - private-ip-address
+keyed_groups:
+  - key: tags.role
+    prefix: tag
+filters:
+  instance-state-name : running
+  tag:Owner: "Actual Enthusiasm"
+compose:
+  ansible_host: public_ip_address if tags.role == "bastion_host" else private_ip_address
