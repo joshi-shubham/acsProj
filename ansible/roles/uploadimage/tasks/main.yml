@@ -1,7 +1,7 @@
 ---
 # tasks file for uploadimage
 - name: Upload image files to S3 bucket
-  aws_s3:
+  amazon.aws.aws_s3:
      # ansible-lint: ignore=AWS306
     bucket: "{{ s3_bucket_name }}"
     mode: put
