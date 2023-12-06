@@ -9,10 +9,11 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket = "aafinal-project-backend"
-    key    = "project/network/terraform.tfstate"
-    region = "us-east-1"
-    dynamodb_table = "aafinal-state-locking"
+    bucket         = "aafinal-project-backend"
+    key            = "project/network/terraform.tfstate"
+    region         = "us-east-1"
+    profile = "voclabs/user2772561=rvsharma2@myseneca.ca"
+    //cd ../dynamodb_table = "aafinal-state-locking"
   }
 }
 
