@@ -16,7 +16,7 @@ data "terraform_remote_state" "network" {
 }
 
 resource "aws_s3_bucket" "web_s3_bucket" {
-  bucket = "webimages-bucket"
+  bucket = var.web-bucket
 }
 
 resource "aws_s3_bucket_ownership_controls" "web_s3_ownership_controls" {
