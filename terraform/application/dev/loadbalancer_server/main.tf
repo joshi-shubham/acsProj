@@ -180,13 +180,6 @@ resource "aws_lb_listener" "alb_listener" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.lb_target_group.arn
-    # redirect {
-    #   port        = "80"
-    #   protocol    = "HTTP"
-    #   //status_code = "HTTP_301"
-
-    # }
-    //target_group_arn = aws_lb_target_group.lb_target_group.arn
   }
   tags = merge(local.default_tags,
     {
@@ -201,7 +194,7 @@ resource "aws_key_pair" "web_key" {
   //key_name   = local.name_prefix
   key_name = "final-project-staging"
   //public_key = file("${local.name_prefix}.pub")
-  public_key = file("project-key.pub")
+  public_key = file("final-project-key.pub")
 }
 
 
