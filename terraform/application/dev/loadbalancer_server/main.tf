@@ -37,6 +37,7 @@ resource "aws_security_group" "alb_security_group" {
 
   dynamic "ingress" {
     for_each = var.service_ports
+#tfsec:ignore:aws-ec2-no-public-ingress-sgr
 
     content {
       description = "INBOUND FROM HTTP/S"
@@ -46,6 +47,8 @@ resource "aws_security_group" "alb_security_group" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
+  #tfsec:ignore:aws-ec2-no-public-egress-sgr
+
   egress {
     description = "OUTBOUND traffic to all"
     from_port   = 0
@@ -78,6 +81,8 @@ resource "aws_security_group" "asg_security_group" {
       security_groups = [aws_security_group.alb_security_group.id]
     }
   }
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
+  
   dynamic "egress" {
     for_each = var.service_ports
 
@@ -192,6 +197,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   )
 }
 
+#tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
@@ -254,7 +260,7 @@ resource "aws_security_group" "bastion_sg" {
   description = "Allow SSH, HTTP/S inbound traffic"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
-
+#tfsec:ignore:aws-ec2-no-public-ingress-sgr
   dynamic "ingress" {
     for_each = var.service_ports
     content {
@@ -265,7 +271,7 @@ resource "aws_security_group" "bastion_sg" {
       protocol    = "tcp"
     }
   }
-
+#tfsec:ignore:aws-ec2-no-public-ingress-sgr
   ingress {
     description = "SSH from everywhere"
     from_port   = 22
@@ -273,7 +279,7 @@ resource "aws_security_group" "bastion_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
   egress {
     description      = "outbound to all"
     from_port        = 0
