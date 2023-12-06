@@ -1,5 +1,6 @@
-- name: restart httpd
-  service:
+- name: Restart httpd
+  ansible.builtin.service:
     name: httpd
-    state: started
+    state: restart
     enabled: true
+  listen: restart httpd

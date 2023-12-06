@@ -1,5 +1,4 @@
 ---
-# vars file for uploadimage
-s3_bucket_name: "sjoshi73-project-backend"
-local_image_directory: "files"
-image: "Actual Enthusiasm.png"
+uploadimage_s3_bucket_name: "sjoshi73-project-backend"
+uploadimage_local_image_directory: "files"
+uploadimage_image: "Actual Enthusiasm.png"

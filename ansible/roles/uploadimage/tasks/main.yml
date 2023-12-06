@@ -1,11 +1,9 @@
 ---
-# tasks file for uploadimage
 - name: Upload image files to S3 bucket
-  amazon.aws.aws_s3:
-     # ansible-lint: ignore=AWS306
-    bucket: "{{ s3_bucket_name }}"
+  amazon.aws.s3_object:
+    bucket: "{{ uploadimage_s3_bucket_name }}"
     mode: put
-    object: "{{ image }}"
-    src: "{{ local_image_directory }}/{{ image }}"
+    object: "{{ uploadimage_image }}"
+    src: "{{ uploadimage_local_image_directory }}/{{ uploadimage_image }}"
   with_fileglob:
-        - "{{ local_image_directory }}/{{ image }}"
+    - "{{ uploadimage_local_image_directory }}/{{ uploadimage_image }}"
