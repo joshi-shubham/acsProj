@@ -113,13 +113,68 @@ resource "aws_launch_template" "launch_template" {
     device_index    = 0
     security_groups = [aws_security_group.asg_security_group.id]
   }
-  //user_data = base64encode("${var.user_data}")
+  user_data = <<EOF
+      #!/bin/bash
+      sudo yum update -y
+      sudo yum install -y httpd
+      myip=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
+      echo "<h1>My private IP is $myip</h1>" >  /var/www/html/index.html
+      sudo systemctl start httpd
+      sudo systemctl enable httpd
+  EOF
 
   tags = merge(local.default_tags,
     {
       "Name" = "${local.name_prefix}-ASG-Launch-Config"
     }
   )
+}
+
+resource "aws_autoscaling_policy" "scale_out_policy" {
+  name                   = "scale_out_policy"
+  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.id
+  scaling_adjustment     = 1
+  adjustment_type        = "ChangeInCapacity"
+}
+resource "aws_autoscaling_policy" "scale_in_policy" {
+  name                   = "scale_in_policy"
+  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.id
+  scaling_adjustment     = -1
+  adjustment_type        = "ChangeInCapacity"
+}
+
+resource "aws_cloudwatch_metric_alarm" "high-cpu-alarm" {
+  alarm_name          = "high-cpu-alarm"
+  evaluation_periods  = "2"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "10"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.auto_scaling_group.name
+  }
+  alarm_description = "monitor high cpu utilization"
+  alarm_actions     = [aws_autoscaling_policy.scale_out_policy.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "low-cpu-alarm" {
+  alarm_name          = "low-cpu-alarm"
+  evaluation_periods  = "2"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = "120"
+  statistic           = "Average"
+  threshold           = "5"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.auto_scaling_group.name
+  }
+  alarm_description = "monitor high cpu utilization"
+  alarm_actions     = [aws_autoscaling_policy.scale_in_policy.arn]
 }
 
 resource "aws_autoscaling_group" "auto_scaling_group" {
@@ -131,11 +186,20 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   target_group_arns = [aws_lb_target_group.lb_target_group.arn]
   name              = "ec2-asg"
 
+
   launch_template {
     id      = aws_launch_template.launch_template.id
     version = aws_launch_template.launch_template.latest_version
   }
 
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupTotalInstances"
+  ]
+  metrics_granularity = "1Minute"
 }
 
 resource "aws_lb" "alb" {
@@ -146,6 +210,7 @@ resource "aws_lb" "alb" {
   subnets                    = data.terraform_remote_state.network.outputs.public_subnet_id
   drop_invalid_header_fields = true
   //subnets            = [for i in aws_subnet.public_subnet : i.id]
+
   tags = merge(local.default_tags,
     {
       "Name" = "${local.name_prefix}-ALB"
@@ -194,7 +259,7 @@ resource "aws_key_pair" "web_key" {
   //key_name   = local.name_prefix
   key_name = "final-project-staging"
   //public_key = file("${local.name_prefix}.pub")
-  public_key = file("final-project-key.pub")
+  public_key = file("final-project-staging.pub")
 }
 
 
