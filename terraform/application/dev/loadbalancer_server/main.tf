@@ -36,7 +36,7 @@ resource "aws_security_group" "alb_security_group" {
   //vpc_id      = aws_vpc.vpc.id
 
   dynamic "ingress" {
-    for_each = var.service_ports
+    for_each = var.service_ports_loadbalancer
 
     content {
       description = "INBOUND FROM HTTP/S"
@@ -67,7 +67,7 @@ resource "aws_security_group" "asg_security_group" {
   //vpc_id      = aws_vpc.vpc.id
 
   dynamic "ingress" {
-    for_each = var.service_ports
+    for_each = var.service_ports_webservers
 
     content {
       description = "inbound from ALB for HTTP/S"
@@ -78,32 +78,12 @@ resource "aws_security_group" "asg_security_group" {
       security_groups = [aws_security_group.alb_security_group.id]
     }
   }
-  dynamic "egress" {
-    for_each = var.service_ports
-
-    content {
-      description = "outbound for HTTP/S"
-      from_port   = egress.value
-      to_port     = egress.value
-      cidr_blocks = ["0.0.0.0/0"]
-      protocol        = "tcp"
-      //security_groups = [aws_security_group.alb_security_group.id]
-    }
-  }
-  ingress {
-    description     = "SSH from bastion"
-    from_port       = 22
-    to_port         = 22
-    protocol        = "tcp"
-    security_groups = [aws_security_group.bastion_sg.id]
-  }
   egress {
-    description = "outbound to bastion for SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    //cidr_blocks = ["0.0.0.0/0"]
-    security_groups = [aws_security_group.bastion_sg.id]
+    description = "OUTBOUND traffic to all"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
   tags = merge(local.default_tags,
     {
@@ -253,18 +233,6 @@ resource "aws_security_group" "bastion_sg" {
   name        = "allow_ssh, HTTP/S"
   description = "Allow SSH, HTTP/S inbound traffic"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-
-
-  dynamic "ingress" {
-    for_each = var.service_ports
-    content {
-      description = "inbound from ports HTTP/S"
-      from_port   = ingress.value
-      to_port     = ingress.value
-      cidr_blocks = ["0.0.0.0/0"]
-      protocol    = "tcp"
-    }
-  }
 
   ingress {
     description = "SSH from everywhere"
