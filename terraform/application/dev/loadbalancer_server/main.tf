@@ -75,7 +75,7 @@ resource "aws_security_group" "asg_security_group" {
       to_port     = ingress.value
       //cidr_blocks = ["0.0.0.0/0"]
       protocol        = "tcp"
-      security_groups = [aws_security_group.alb_security_group.id]
+      security_groups = [aws_security_group.alb_security_group.id, aws_security_group.bastion_sg.id]
     }
   }
   egress {
