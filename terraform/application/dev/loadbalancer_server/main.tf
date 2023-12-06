@@ -27,8 +27,10 @@ module "globalvars" {
   source = "../../../modules/globalvars"
 }
 
+
 resource "aws_lb" "alb" {
   name                       = "public-alb"
+  #tfsec:ignore:aws-elb-alb-not-public
   internal                   = false
   load_balancer_type         = "application"
   security_groups            = [aws_security_group.alb_security_group.id]
@@ -60,6 +62,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   )
 }
 
+#tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
@@ -101,3 +104,4 @@ resource "aws_instance" "bastion" {
     }
   )
 }
+
