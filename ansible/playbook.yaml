@@ -1,18 +1,12 @@
-- name: Upload images to S3 bucket
-  hosts: localhost
-  
-  tasks:
-    - name: upload image to S3 role
-      include_role:
-        name: uploadimage
+# - name: Upload images to S3 bucket
+#   hosts: localhost
+#   roles:
+#     - uploadimage
 
-   
 - name: Install httpd on webserver group
   hosts: tag_webserver
   gather_facts: true
   vars_files:
     - ./group_vars/tag_webserver
-  tasks:
-    - name: install httpd and create webpage role
-      include_role:
-        name: installweb
+  roles:
+    - installweb
