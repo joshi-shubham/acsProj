@@ -6,7 +6,7 @@ output "default_tags" {
 }
 
 output "prefix" {
-  value = "Project"
+  value = "project"
 }
 
 output "instance_type" {
