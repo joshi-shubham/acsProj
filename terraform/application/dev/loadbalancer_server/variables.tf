@@ -39,9 +39,17 @@ variable "ami" {
 }
 
 
-variable "service_ports" {
+variable "service_ports_webservers" {
+  type        = list(string)
+  default     = ["80", "443", "22"]
+  description = "Ports that should be open on a webserver"
+}
+
+variable "service_ports_loadbalancer" {
   type        = list(string)
   default     = ["80", "443"]
   description = "Ports that should be open on a webserver"
 }
+
+
 
