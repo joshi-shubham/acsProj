@@ -18,6 +18,7 @@
   ansible.builtin.template:
     src: templates/webpage.j2
     dest: "{{ installweb_web_root }}/{{ installweb_webpage_file }}"
+    mode: "755"
   vars:
     s3_bucket: "{{ installweb_s3_bucket_name }}"
     s3_image: "{{ installweb_s3_image_key }}"
