@@ -57,7 +57,7 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu_alarm" {
   dimensions = {
     AutoScalingGroupName = aws_autoscaling_group.auto_scaling_group.name
   }
-  alarm_description = "This metric monitor EC2 instance CPU utilization"
+  alarm_description = "metric to monitor high CPU utilization for webserver"
   alarm_actions     = [aws_autoscaling_policy.scale_out_policy.arn]
 }
 resource "aws_autoscaling_policy" "scale_in_policy" {
@@ -80,7 +80,7 @@ resource "aws_cloudwatch_metric_alarm" "low_cpu_alarm" {
     AutoScalingGroupName = aws_autoscaling_group.auto_scaling_group.name
 
   }
-  alarm_description = "This metric monitor EC2 instance CPU utilization"
+  alarm_description = "metric to monitor low CPU utilization for webserver"
   alarm_actions     = [aws_autoscaling_policy.scale_in_policy.arn]
 }
 # Create a new load balancer attachment
@@ -113,4 +113,10 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "aws_autoscaling_attachment" "attach-ASG-TG" {
+  autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.name
+  lb_target_group_arn = aws_lb_target_group.lb_target_group.arn
+  
 }
