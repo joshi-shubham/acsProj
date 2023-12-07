@@ -2,11 +2,10 @@ resource "aws_security_group" "alb_security_group" {
   name        = "alb-security-group"
   description = "ALB Security Group"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-  //vpc_id      = aws_vpc.vpc.id
 
   dynamic "ingress" {
     for_each = var.service_ports_loadbalancer
- #tfsec:ignore:aws-ec2-no-public-ingress-sgr
+    #tfsec:ignore:aws-ec2-no-public-ingress-sgr
     content {
       description = "INBOUND FROM HTTP/S"
       from_port   = ingress.value
@@ -15,7 +14,7 @@ resource "aws_security_group" "alb_security_group" {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
- 
+
 
   egress {
     description = "OUTBOUND traffic to all"
@@ -36,16 +35,14 @@ resource "aws_security_group" "asg_security_group" {
   name        = "asg-security-group"
   description = "ASG Security Group"
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-  //vpc_id      = aws_vpc.vpc.id
 
   dynamic "ingress" {
     for_each = var.service_ports_webservers
 
     content {
-      description = "inbound from ALB for HTTP/S"
-      from_port   = ingress.value
-      to_port     = ingress.value
-      //cidr_blocks = ["0.0.0.0/0"]
+      description     = "inbound from ALB for HTTP/S"
+      from_port       = ingress.value
+      to_port         = ingress.value
       protocol        = "tcp"
       security_groups = [aws_security_group.alb_security_group.id, aws_security_group.bastion_sg.id]
     }
@@ -55,7 +52,7 @@ resource "aws_security_group" "asg_security_group" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-     #tfsec:ignore:aws-ec2-no-public-egress-sgr
+    #tfsec:ignore:aws-ec2-no-public-egress-sgr
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = merge(local.default_tags,
