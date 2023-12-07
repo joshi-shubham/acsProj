@@ -8,7 +8,7 @@ provider "aws" {
 data "terraform_remote_state" "network" { 
   backend = "s3"
   config = {
-    bucket = "aafinal-project-backend"
+    bucket = "sjoshi73-project-backend"
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"   
     
@@ -19,7 +19,7 @@ data "terraform_remote_state" "network" {
 #tfsec:ignore:aws-s3-enable-versioning
 #tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "web_s3_bucket" {
-  bucket = "webimages-bucket"
+  bucket = var.web-bucket
 }
 
 resource "aws_s3_bucket_ownership_controls" "web_s3_ownership_controls" {

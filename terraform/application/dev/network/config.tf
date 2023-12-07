@@ -9,9 +9,11 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket = "sjoshi73-project-backend"
-    key    = "project/network/terraform.tfstate"
-    region = "us-east-1"
+    bucket         = "sjoshi73-project-backend"
+    key            = "project/network/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-lock-dynamo"
+
   }
 }
 
