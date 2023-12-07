@@ -1,8 +1,15 @@
+data "aws_iam_instance_profile" "labrole" {
+  name = "LabInstanceProfile"
+}
+
 resource "aws_launch_template" "launch_template" {
   name          = "aws-launch-template"
   image_id      = var.ami
   instance_type = lookup(var.instance_type, var.env)
   key_name      = aws_key_pair.web_key.key_name
+  iam_instance_profile {
+    arn = data.aws_iam_instance_profile.labrole.arn
+  }
   metadata_options {
     http_tokens = "required"
   }

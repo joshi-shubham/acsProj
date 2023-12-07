@@ -5,5 +5,7 @@ output "bastion-ip" {
 
 output "ALB-DNS" {
   value = aws_lb.alb.dns_name
-
+}
+output name {
+  value       = data.aws_iam_instance_profile.labrole.arn
 }
