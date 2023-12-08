@@ -17,7 +17,7 @@ locals {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "aafinal-project-backend"
+    bucket = "sjoshi73-project-backend"
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"
   }
@@ -70,7 +70,6 @@ resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
   protocol          = "HTTP"
-
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.lb_target_group.arn
@@ -110,4 +109,3 @@ resource "aws_instance" "bastion" {
     }
   )
 }
-

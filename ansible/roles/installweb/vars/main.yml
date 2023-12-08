@@ -2,5 +2,5 @@
 # vars file for installweb
 installweb_web_root: "/var/www/html"
 installweb_webpage_file: "index.html"
-installweb_s3_bucket_name: "sjoshi73-project-backend"
-installweb_s3_image_key: "Actual Enthusiasm.png"
+installweb_s3_bucket_name: "sjoshi73-webimages-bucket"
+installweb_s3_image_key: "actual_enthusiasm.png"
