@@ -94,7 +94,7 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   min_size            = 3
   vpc_zone_identifier = data.terraform_remote_state.network.outputs.private_subnet_id
   target_group_arns   = [aws_lb_target_group.lb_target_group.arn]
-  name                = "ec2-asg"
+  name                = "webserver-ASG"
 
   launch_template {
     id      = aws_launch_template.launch_template.id
