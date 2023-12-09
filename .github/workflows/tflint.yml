@@ -12,4 +12,4 @@ jobs:
 
       - name: Terraform fmt in dev/net
         id: fmt
-        run: terraform fmt -recursive -check terrform
+        run: terraform fmt -recursive -check terraform
