@@ -1,5 +1,7 @@
 - name: Upload images to S3 bucket
   hosts: localhost
+  vars_files:
+    - ./vars/variable.yml
   roles:
     - uploadimage
 
@@ -7,6 +9,6 @@
   hosts: tag_webserver
   gather_facts: true
   vars_files:
-    - ./group_vars/tag_webserver
+    - ./vars/variable.yml
   roles:
     - installweb
