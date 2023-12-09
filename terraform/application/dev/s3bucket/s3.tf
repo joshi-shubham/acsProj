@@ -3,17 +3,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-
-# Use remote state to retrieve the data
-data "terraform_remote_state" "network" { 
-  backend = "s3"
-  config = {
-    bucket = "aafinal-project-backend"
-    key    = "project/network/terraform.tfstate"
-    region = "us-east-1"   
-    
-  }
-}
 #tfsec:ignore:aws-s3-enable-bucket-encryption
 #tfsec:ignore:aws-s3-encryption-customer-key
 #tfsec:ignore:aws-s3-enable-versioning

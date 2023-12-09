@@ -1,3 +1,4 @@
+#tfsec:ignore:aws-dynamodb-table-customer-key
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
   name           = module.globalvars.state_lock_table
   hash_key       = "LockID"
@@ -8,4 +9,12 @@ resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
     name = "LockID"
     type = "S"
   }
+
+  server_side_encryption {
+        enabled = true 
+    }
+
+  point_in_time_recovery {
+        enabled = true
+    }
 }

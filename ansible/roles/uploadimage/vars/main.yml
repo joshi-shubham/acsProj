@@ -1,4 +1,4 @@
 ---
-uploadimage_s3_bucket_name: "sjoshi73-webimages-bucket"
+uploadimage_s3_bucket_name: "{{ s3_bucket_name }}"
 uploadimage_local_image_directory: "files"
 uploadimage_image: "actual_enthusiasm.png"
