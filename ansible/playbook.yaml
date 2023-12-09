@@ -1,7 +1,7 @@
-# - name: Upload images to S3 bucket
-#   hosts: localhost
-#   roles:
-#     - uploadimage
+- name: Upload images to S3 bucket
+  hosts: localhost
+  roles:
+    - uploadimage
 
 - name: Install httpd on webserver group
   hosts: tag_webserver

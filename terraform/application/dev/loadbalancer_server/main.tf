@@ -17,7 +17,7 @@ locals {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "sjoshi73-project-backend"
+    bucket = "aafinal-project-backend"
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"
   }
@@ -29,7 +29,7 @@ module "globalvars" {
 
 
 resource "aws_lb" "alb" {
-  name                       = "public-alb"
+  name = "application-lb"
   #tfsec:ignore:aws-elb-alb-not-public
   internal                   = false
   load_balancer_type         = "application"
@@ -48,6 +48,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.terraform_remote_state.network.outputs.vpc_id
+  
   health_check {
     path     = "/"
     matcher  = 200
@@ -62,12 +63,13 @@ resource "aws_lb_target_group" "lb_target_group" {
   )
 }
 
+
+
 #tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
   protocol          = "HTTP"
-
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.lb_target_group.arn
@@ -80,14 +82,14 @@ resource "aws_lb_listener" "alb_listener" {
 }
 
 resource "aws_key_pair" "web_key" {
-  key_name = "final-project-staging"
-  public_key = file("${local.prefix}-key.pub")
+  key_name   = "final-project-staging"
+  public_key = file("${local.name_prefix}-key.pub")
 }
 
 resource "aws_instance" "bastion" {
-  ami           = data.aws_ami.latest_amazon_linux.id
-  instance_type = lookup(var.instance_type, var.env)
-  key_name      = aws_key_pair.web_key.key_name
+  ami                         = data.aws_ami.latest_amazon_linux.id
+  instance_type               = lookup(var.instance_type, var.env)
+  key_name                    = aws_key_pair.web_key.key_name
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_id[0]
   security_groups             = [aws_security_group.bastion_sg.id]
   associate_public_ip_address = true
@@ -97,6 +99,9 @@ resource "aws_instance" "bastion" {
   metadata_options {
     http_tokens = "required"
   }
+  lifecycle {
+    create_before_destroy = true
+  }
   tags = merge(local.default_tags,
     {
       "Name" = "${local.name_prefix}-bastion"
@@ -104,4 +109,3 @@ resource "aws_instance" "bastion" {
     }
   )
 }
-

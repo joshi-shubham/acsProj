@@ -1,4 +1,4 @@
 ---
-uploadimage_s3_bucket_name: "sjoshi73-project-backend"
+uploadimage_s3_bucket_name: "sjoshi73-webimages-bucket"
 uploadimage_local_image_directory: "files"
-uploadimage_image: "Actual Enthusiasm.png"
+uploadimage_image: "actual_enthusiasm.png"
