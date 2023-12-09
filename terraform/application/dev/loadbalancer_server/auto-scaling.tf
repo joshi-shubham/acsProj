@@ -117,6 +117,6 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
 
 resource "aws_autoscaling_attachment" "attach-ASG-TG" {
   autoscaling_group_name = aws_autoscaling_group.auto_scaling_group.name
-  lb_target_group_arn = aws_lb_target_group.lb_target_group.arn
-  
+  lb_target_group_arn    = aws_lb_target_group.lb_target_group.arn
+
 }

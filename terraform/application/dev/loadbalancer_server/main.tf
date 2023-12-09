@@ -17,7 +17,7 @@ locals {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket ="${ module.globalvars.s3_dev_backend_bucket }"
+    bucket = module.globalvars.s3_dev_backend_bucket
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"
   }
@@ -48,7 +48,7 @@ resource "aws_lb_target_group" "lb_target_group" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.terraform_remote_state.network.outputs.vpc_id
-  
+
   health_check {
     path     = "/"
     matcher  = 200
