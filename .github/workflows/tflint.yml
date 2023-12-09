@@ -1,11 +1,6 @@
 name: Lint project with terraform lint
 
-on:
-  pull_request:
-  push:
-    branches:
-      - "prod"
-      - "staging"
+on: [push, pull_request]
 
 jobs:
   lint:
@@ -15,6 +10,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform fmt
+      - name: Terraform fmt in dev/net
         id: fmt
-        run: terraform fmt -check
+        run: terraform fmt -recursive -check terrform
