@@ -17,10 +17,10 @@ output "instance_type" {
 }
 
 output "s3_dev_backend_bucket" {
-  value = "cccastro2-project-backend-staging"
+  value = "sjoshi73-backend-staging"
 }
 output "s3_prod_backend_bucket" {
-  value = "cccastro2-project-backend-prod"
+  value = "sjoshi73-project-backend"
 }
 
 output "state_lock_table_prod" {

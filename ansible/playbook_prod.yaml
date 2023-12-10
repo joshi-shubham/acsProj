@@ -12,4 +12,3 @@
     - ./vars/variable_prod.yml
   roles:
     - installweb
-
