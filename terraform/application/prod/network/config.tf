@@ -9,7 +9,7 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket         = "cccastro2-project-backend-staging"
+    bucket         = "cccastro2-project-backend-prod"
     key            = "project/network/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-lock-dynamo"

@@ -10,13 +10,13 @@ variable "env" {
   description = "Environment of the application"
 }
 
-variable "public_subnet_cidr_blocks" {
+variable "public_subnet_cidr_blocks_staging" {
   type        = list(string)
   default     = ["10.200.0.0/24", "10.200.1.0/24", "10.200.3.0/24"]
   description = "description"
 }
 
-variable "private_subnet_cidr_blocks" {
+variable "private_subnet_cidr_blocks_staging" {
   type        = list(string)
   default     = ["10.200.4.0/24", "10.200.5.0/24", "10.200.6.0/24"]
   description = "description"

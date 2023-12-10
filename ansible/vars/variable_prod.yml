@@ -1,0 +1,3 @@
+s3_bucket_name: cccastro-webimages-bucket-prod
+key_path: ./project-prod-key
+bastion_prod: "{{ groups['tag_bastion_prod'][0] }}"

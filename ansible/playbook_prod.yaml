@@ -1,15 +1,15 @@
 - name: Upload images to S3 bucket
   hosts: localhost
   vars_files:
-    - ./vars/variable.yml
+    - ./vars/variable_prod.yml
   roles:
     - uploadimage
 
 - name: Install httpd on webserver group
-  hosts: tag_webserver
+  hosts: tag_webserver_prod
   gather_facts: true
   vars_files:
-    - ./vars/variable.yml
+    - ./vars/variable_prod.yml
   roles:
     - installweb
 
