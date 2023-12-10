@@ -17,7 +17,7 @@ locals {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = module.globalvars.s3_dev_backend_bucket
+    bucket = module.globalvars.s3_prod_backend_bucket
     key    = "project/network/terraform.tfstate"
     region = "us-east-1"
   }

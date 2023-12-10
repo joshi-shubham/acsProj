@@ -20,7 +20,7 @@ resource "aws_launch_template" "launch_template" {
     tags = merge(local.default_tags,
       {
         "Name" = "${local.name_prefix}-Webserver"
-        "role" = "webserver"
+        "role" = "webserver-${var.env}"
       }
     )
   }
