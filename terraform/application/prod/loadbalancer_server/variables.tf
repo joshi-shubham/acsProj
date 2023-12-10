@@ -16,9 +16,9 @@ variable "prefix" {
 
 # Variable to signal the current environment 
 variable "env" {
-  default     = "staging"
+  default     = "prod"
   type        = string
-  description = "Deployment Environment"
+  description = "Production Environment"
 }
 
 variable "instance_type" {

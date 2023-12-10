@@ -2,3 +2,4 @@
 .trunk
 **/.terraform*
 **/*.pub
+**/*-key

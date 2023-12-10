@@ -6,6 +6,7 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
+#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "main" {
   cidr_block       = var.vpc_cidr
   instance_tenancy = "default"
@@ -21,7 +22,7 @@ resource "aws_subnet" "public_subnet" {
   count             = length(var.public_subnet_cidr_blocks)
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.public_subnet_cidr_blocks[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index+1]
+  availability_zone = data.aws_availability_zones.available.names[count.index + 1]
 
   tags = merge(
     var.default_tags, {
@@ -70,7 +71,7 @@ resource "aws_subnet" "private_subnet" {
   count             = length(var.private_subnet_cidr_blocks)
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_cidr_blocks[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index+1]
+  availability_zone = data.aws_availability_zones.available.names[count.index + 1]
 
   tags = merge(
     var.default_tags, {

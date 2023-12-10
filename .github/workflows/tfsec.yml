@@ -10,3 +10,6 @@ jobs:
         uses: actions/checkout@master
       - name: tfsec
         uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: ./terraform
+          additional_args: --force-all-dirs

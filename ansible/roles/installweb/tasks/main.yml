@@ -2,12 +2,12 @@
 # tasks file for installweb
 - name: Update package cache and install httpd
   become: true
-  package:
+  ansible.builtin.package:
     name: httpd
 
 - name: Start httpd service and enable it on boot
   become: true
-  service:
+  ansible.builtin.service:
     name: httpd
     state: started
     enabled: true
@@ -15,10 +15,10 @@
 
 - name: Create webpage fetching image from S3
   become: true
-  template:
+  ansible.builtin.template:
     src: templates/webpage.j2
-    dest: "{{ web_root }}/{{ webpage_file }}"
-    
+    dest: "{{ installweb_web_root }}/{{ installweb_webpage_file }}"
+    mode: "755"
   vars:
     s3_bucket: "{{ s3_bucket_name }}"
-    s3_image: "{{ s3_image_key }}"
+    s3_image: "{{ installweb_s3_image_key }}"
