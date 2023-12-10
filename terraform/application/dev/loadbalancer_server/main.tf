@@ -82,7 +82,7 @@ resource "aws_lb_listener" "alb_listener" {
 }
 
 resource "aws_key_pair" "web_key" {
-  key_name   = "${local.name_prefix}"
+  key_name   = local.name_prefix
   public_key = file("${local.name_prefix}-key.pub")
 }
 
